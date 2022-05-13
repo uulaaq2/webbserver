@@ -47,18 +47,8 @@ router.post('/me/changepassword', cors(), headers, function(req, res) {
   }
 
   const main = async () => {
-    const token = new Token()
-    const verifiedTokenResult = token.verifyToken(req.body.token, true)
-    if (verifiedTokenResult.status !== 'ok') {
-      res.send(verifiedTokenResult)
-  
-      return
-    }
+    const userChangePasswordResult = await new User().changePassword(req.body.token, req.body.newPassword)
 
-    const emailAddress = verifiedTokenResult.decryptedData.email    
-
-    const user = new User()
-    const userChangePasswordResult = await user.changePassword(emailAddress, req.body.newPassword)
     res.send(userChangePasswordResult)
   }
 

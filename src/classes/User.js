@@ -134,11 +134,18 @@ class User {
         }
     }
 
-    async changePassword(emailAddress, newPassword) {
+    async changePassword(token, newPassword) {
         try {
-            let encryptedPassword = new Password().encryptPassword(newPassword)
-            const salt = encryptedPassword.salt
-            encryptedPassword = encryptedPassword.encryptedPassword
+            const verifyTokenResult = new Token().verifyToken(req.body.token, true)
+            if (verifyTokenResult.status !== 'ok') {
+         
+              return verifyTokenResult
+            }        
+            const emailAddress = verifyTokenResult.decryptedData.email    
+
+            const encryptPasswordResult = new Password().encryptPassword(newPassword)
+            const encryptedPassword = encryptPasswordResult.encryptedPassword
+            const salt = encryptPasswordResult.salt
 
             const sqlQuery = new sqlQueryBuilder()
                                  .update(process.env.TABLE_USERS)
@@ -146,16 +153,29 @@ class User {
                                  .where({ Email: emailAddress })
                                  .get()
 
-            let updatedPassword = new DB()
-            updatedPassword = await updatedPassword.query(sqlQuery.sqlStatement, sqlQuery.values)
-            if (updatedPassword.status === 'error') {
-                throw new Error(updatedPassword.message)
+            const updatePasswordResult= await new DB().query(sqlQuery.sqlStatement, sqlQuery.values)
+            if (updatePasswordResult.status !== 'ok') {
+                return updatePasswordResult
             }
 
-            if (updatedPassword.status !== 'ok') {
-                return updatedPassword
+            const getUserResult = this.getUserByEmail(emailAddress)
+            if (getUserResult.status !== 'ok') {
+
+                return getUserResult
             }
-            return setSuccess()
+
+            const newTokenResult = this.generateNewUserToken(token)
+            if (newTokenResult.status !== 'ok') {
+
+                return newTokenResult
+            }
+
+            const data = {
+                token: newTokenResult.token,
+                user: getUserResult.user
+            }
+
+            return setSuccess(data)
         } catch (error) {
             return setError(error)
         }
