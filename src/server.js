@@ -14,7 +14,7 @@ const routerSignIn = require('./routes/signin')
 const routerUser = require('./routes/user')
 
 const app = express();
-const port = process.env.APP_PORT || 3002
+const port = process.env.APP_PORT || 3003
 
 app.use(express.static('public'))
 

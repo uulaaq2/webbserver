@@ -64,7 +64,7 @@ class Token {
       return setSuccess(data)
       
     } catch (error) {
-      return setError(error)
+      return setCustom('invalidToken', 'Invalid token')
     }
   // end of verify token function
   }

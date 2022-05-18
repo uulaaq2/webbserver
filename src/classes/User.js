@@ -280,6 +280,9 @@ class User {
         try {
             const token = new Token()
             const verifyTokenResult = token.verifyToken(clientToken)
+            if (verifyTokenResult.status !== 'ok') {
+                return verifyTokenResult
+            }
             if (!includeUserData) {
                 return verifyTokenResult
             }
