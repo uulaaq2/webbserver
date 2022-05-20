@@ -49,9 +49,9 @@ class Token {
       if (diffToDate.days < 0) {
         return setCustom('accountIsExpired', 'Your account is Expired, please contact to your system administrator')
       }
-  
+
       if (!ignoreShouldChangePassword) {
-        if (result.shouldChangePassword === 'Yes') {
+        if (result.shouldChangePassword) {
           return setCustom('shouldChangePassword', 'Please change your password', { token })
         }
       }

@@ -14,12 +14,17 @@ router.get('/', cors(), headers, function(req, res) {
 router.post('/', cors(), headers, function(req, res) {
   const signIn = async () => {
     try {
-      if (!req.body.email || !req.body.password) {
-        return setWarning('Missing paramters')
+      
+      const email = req.body.email
+      const password = req.body.password
+      const rememberMe = req.body.rememberMe
+
+      if (!email || !password || rememberMe === undefined) {        
+        res.send(setWarning('Missing paramters'))
       }
   
       const user = new User()
-      const userSigninResult = await user.signin(req.body.email, req.body.password)
+      const userSigninResult = await user.signIn(email, password, rememberMe)
       
       res.send(await userSigninResult)
     } catch (error) {

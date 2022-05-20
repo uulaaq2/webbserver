@@ -39,8 +39,6 @@ router.post('/me/verifypassword', cors(), headers, function(req, res) {
 })
 
 router.post('/me/changepassword', cors(), headers, function(req, res) {
-  console.log(req.body.newPassword)
-  console.log(req.body.token)
   if (!req.body.newPassword || !req.body.token) {
     res.send(setWarning('Missing parameters'))
     return

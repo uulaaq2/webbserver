@@ -1,4 +1,4 @@
-const { setError, setWarning, setSuccess } = require('../functions/setReply')
+const { setError, setWarning, setSuccess, setCustom } = require('../functions/setReply')
 const DB = require('./DB')
 const sqlQueryBuilder = require('./SQLQueryBuilder')
 const Password = require('../classes/Password')
@@ -45,18 +45,18 @@ class User {
     // end of getUserByEmail function
     }
 
-    prepareUserTokenFields(user) {
+    prepareUserTokenFields(user, rememberMe) {
         try {
             const data = {
                 userTokenFields : {
                     accountExpiresAt: user.Expires_At,
                     email: user.Email,
-                    //password: user.Password,
                     avatar: user.Avatar,
                     site: user.Site,
                     homePage: user.Home_Page,
-                    canBeRemembered: user.Can_Be_Remembered,
-                    shouldChangePassword: user.Should_Change_Password
+                    canBeRemembered: user.Can_Be_Remembered,                    
+                    shouldChangePassword: user.Should_Change_Password,
+                    rememberMe
                 }
             }
 
@@ -92,7 +92,7 @@ class User {
         }
     }
 
-    async signin(emailAddress, password) {
+    async signIn(emailAddress, password, rememberMe) {
         try {
             const userResult = await this.getUserByEmail(emailAddress)
 
@@ -104,9 +104,9 @@ class User {
             passwordVerifiedResult = passwordVerifiedResult.decryptPassword(password, userResult.user.Password)
             if (passwordVerifiedResult.status !== 'ok') {
                 return passwordVerifiedResult
-            }
+            }            
             
-            const userTokenFieldsResult = this.prepareUserTokenFields(userResult.user)
+            const userTokenFieldsResult = this.prepareUserTokenFields(userResult.user, rememberMe)
             if (userTokenFieldsResult.status !== 'ok') {
                 return userTokenFieldsResult
             }
@@ -124,6 +124,7 @@ class User {
 
             const data = {
                 token: tokenGeneratedResult.token,
+                rememberMe,
                 user: userResult.user
             }
 
@@ -136,12 +137,15 @@ class User {
 
     async changePassword(token, newPassword) {
         try {
-            const verifyTokenResult = new Token().verifyToken(req.body.token, true)
+            
+            const verifyTokenResult = new Token().verifyToken(token, true)
             if (verifyTokenResult.status !== 'ok') {
          
               return verifyTokenResult
             }        
+            
             const emailAddress = verifyTokenResult.decryptedData.email    
+            const rememberMe = verifyTokenResult.decryptedData.rememberMe
 
             const encryptPasswordResult = new Password().encryptPassword(newPassword)
             const encryptedPassword = encryptPasswordResult.encryptedPassword
@@ -149,7 +153,7 @@ class User {
 
             const sqlQuery = new sqlQueryBuilder()
                                  .update(process.env.TABLE_USERS)
-                                 .set({ Password: encryptedPassword, Password2: newPassword, Salt: salt, Should_Change_Password: 'No' })
+                                 .set({ Password: encryptedPassword, Password2: newPassword, Salt: salt, Should_Change_Password: 0 })
                                  .where({ Email: emailAddress })
                                  .get()
 
@@ -158,23 +162,28 @@ class User {
                 return updatePasswordResult
             }
 
-            const getUserResult = this.getUserByEmail(emailAddress)
+            const getUserResult = await this.getUserByEmail(emailAddress)
             if (getUserResult.status !== 'ok') {
 
                 return getUserResult
-            }
+            }            
 
-            const newTokenResult = this.generateNewUserToken(token)
-            if (newTokenResult.status !== 'ok') {
+            const getTokenFieldsResult = this.prepareUserTokenFields(getUserResult.user, rememberMe)
+            if (getTokenFieldsResult.status !== 'ok') {
+                return getTokenFieldsResult
+            }           
 
-                return newTokenResult
-            }
+            const getNewTokenResult = new Token().generateToken(getTokenFieldsResult.userTokenFields, rememberMe)
+            if (getNewTokenResult.status !== 'ok') {
+                return getNewTokenResult
+            }                 
 
             const data = {
-                token: newTokenResult.token,
+                token: getNewTokenResult.token,                
+                rememberMe,
                 user: getUserResult.user
             }
-
+     
             return setSuccess(data)
         } catch (error) {
             return setError(error)
@@ -248,48 +257,25 @@ class User {
     // end of verifyUserPassword
     }
 
-    async generateNewUserToken(clientToken, expiresIn = null) {
-        try {
-            // Verify token and get user email
-            const token = new Token()
-            const verifyTokenResult = token.verifyToken(clientToken, true)
-            if (verifyTokenResult.status !== 'ok') {
-                return verifyTokenResult
-            }
-    
-            // get user via email from verify token result
-            const userResult = await this.getUserByEmail(verifyTokenResult.decryptedData.email)
-            if (userResult.status !== 'ok') {
-                return userResult
-            }            
-            
-            // generate a new token for user
-            const generateTokenResult = token.generateToken(this.prepareUserTokenFields(userResult.user).userTokenFields, expiresIn)
-            if (generateTokenResult.status !== 'ok') {
-                return generateTokenResult
-            }
-            
-            return generateTokenResult
-        } catch (error) {
-            return setError(error)
-        }
-    // enf of generateNewUserToken
-    }
-
-    async verifyUserToken(clientToken, includeUserData = false) {
+    async verifyUserToken(clientToken) {
         try {
             const token = new Token()
             const verifyTokenResult = token.verifyToken(clientToken)
+            const rememberMe = verifyTokenResult.decryptedData.rememberMe
+
             if (verifyTokenResult.status !== 'ok') {
                 return verifyTokenResult
             }
-            if (!includeUserData) {
-                return verifyTokenResult
-            }
-            
+           
             const getUserByEmailResult = await this.getUserByEmail(verifyTokenResult.decryptedData.email)
 
-            return getUserByEmailResult
+            const data = {
+                token: clientToken,
+                rememberMe,
+                user: getUserByEmailResult.user
+            }
+            
+            return setCustom(getUserByEmailResult.status, getUserByEmailResult.message, data)
         } catch (error) {
             return setError(error)
         }
