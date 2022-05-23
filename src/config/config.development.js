@@ -1,3 +1,3 @@
-var config = require('./config.global')
+import config from './config.global'
 
-module.exports = config
+export default config

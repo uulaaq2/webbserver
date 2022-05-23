@@ -1,9 +1,9 @@
-const { setError, setWarning, setSuccess, setCustom } = require('../functions/setReply')
-const DB = require('./DB')
-const sqlQueryBuilder = require('./SQLQueryBuilder')
-const Password = require('../classes/Password')
-const Token = require('../classes/Token')
-const axios = require('axios')
+import { setError, setWarning, setSuccess, setCustom } from '../functions/setReply'
+import DB from './DB'
+import sqlQueryBuilder from './SQLQueryBuilder'
+import Password from '../classes/Password'
+import Token from '../classes/Token'
+import axios from 'axios'
 
 class User {
 
@@ -284,4 +284,4 @@ class User {
 // end of User class
 }
 
-module.exports = User
+export default User

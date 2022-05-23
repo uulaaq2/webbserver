@@ -1,4 +1,4 @@
-const { setSuccess } = require("../functions/setReply")
+import { setSuccess } from '../functions/setReply'
 
 class SQLQueryBuilder {
         pieces = []
@@ -102,4 +102,4 @@ class SQLQueryBuilder {
         }
 }
 
-module.exports = SQLQueryBuilder
+export default SQLQueryBuilder

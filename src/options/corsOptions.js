@@ -1,9 +1,9 @@
-const corsOptions = {
+export const corsOptions = {
   origin: true, //included origin as true
   credentials: true, //included credentials as true
 }
 
-const headers = (req, res, next) => {
+export const headers = (req, res, next) => {
 	/*const origin = (req.headers.origin == 'http://localhost:9500') ? 'http://localhost:9500' : 'https://mywebsite.com'
 	res.setHeader('Access-Control-Allow-Origin', origin)
 	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
@@ -12,4 +12,3 @@ const headers = (req, res, next) => {
 	next()
 }
 
-module.exports = headers

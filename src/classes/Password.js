@@ -1,5 +1,5 @@
-const bcrypt = require('bcryptjs')
-const { setError, setSuccess, setWarning } = require('../functions/setReply')
+import bcrypt from 'bcryptjs'
+import { setError, setSuccess, setWarning } from '../functions/setReply'
 
 class Password {
   //start of encryptPassword function
@@ -38,4 +38,4 @@ class Password {
 // end of class
 }
 
-module.exports = Password
+export default Password

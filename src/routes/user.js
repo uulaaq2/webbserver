@@ -1,13 +1,9 @@
-const express = require('express')
+import express from 'express'
 const router = express.Router()
-const cors = require('cors')
-const headers = require('../options/corsOptions')
-const { setWarning, setSuccess, setError } = require('../functions/setReply')
-const Token = require('../classes/Token')
-const Password = require('../classes/Password')
-const res = require('express/lib/response')
-const User = require('../classes/User')
-
+import cors from 'cors'
+import { headers } from '../options/corsOptions'
+import { setWarning, setSuccess, setError } from '../functions/setReply'
+import User from '../classes/User'
 
 router.get('/', cors(), headers, function(req, res) {
   res.send('user page get');
@@ -106,6 +102,4 @@ router.post('/me/verifytoken', cors(), headers, function(req, res) {
   }
 })
 
-
-
-module.exports = router
+export default router

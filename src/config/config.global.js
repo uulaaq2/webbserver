@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     showServerDevelopmentErrors: true,
     tokenExpiresIn: 14
 }

@@ -1,4 +1,4 @@
-const { setError, setSuccess } = require('../functions/setReply')
+import { setError, setSuccess } from '../functions/setReply'
 
 class DateUtils {
   // function: difference between two days
@@ -21,4 +21,4 @@ class DateUtils {
 // end of class
 }
 
-module.exports = DateUtils
+export default DateUtils

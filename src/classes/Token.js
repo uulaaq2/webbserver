@@ -1,7 +1,7 @@
-const jwt = require('jsonwebtoken')
-const DateUtils = require('./DateUtils')
-const { setSuccess, setWarning, setCustom, setError } = require('../functions/setReply')
-const config = require('../config')
+import jwt from 'jsonwebtoken'
+import DateUtils from './DateUtils'
+import { setSuccess, setWarning, setCustom, setError } from '../functions/setReply'
+import config from '../config'
 
 class Token {
   // start of generate token function
@@ -70,4 +70,4 @@ class Token {
   }
 }
 
-module.exports = Token
+export default Token

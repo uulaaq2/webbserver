@@ -1,5 +1,5 @@
-const mysql = require('mysql')
-const { setSuccess, setError, setWarning } = require('../functions/setReply')
+import mysql from 'mysql'
+import { setSuccess, setError, setWarning } from '../functions/setReply'
 
 class DB {
 
@@ -61,5 +61,4 @@ class DB {
 
 // end of class
 }
-
-module.exports = DB
+export default DB

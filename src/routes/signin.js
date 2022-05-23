@@ -1,11 +1,10 @@
-const express = require('express')
-const router = express.Router()
-const cors = require('cors')
-const headers = require('../options/corsOptions')
-const User = require('../classes/User')
-const { setSucces, setWarning, setCustom, setError } = require('../functions/setReply')
-module.exports = router
+import express from 'express'
+import cors from 'cors'
+import { headers } from '../options/corsOptions'
+import { setWarning, setSuccess, setError } from '../functions/setReply'
+import User from '../classes/User'
 
+const router = express.Router()
 
 router.get('/', cors(), headers, function(req, res) {
   res.send('sign in page get');
@@ -35,3 +34,4 @@ router.post('/', cors(), headers, function(req, res) {
   signIn()
 })
 
+export default router

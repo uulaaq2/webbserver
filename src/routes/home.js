@@ -1,13 +1,9 @@
-const express = require('express')
-const cors = require('cors')
-const headers = require('../options/corsOptions')
-const SQLQueryBuilder = require('../classes/SQLQueryBuilder')
-const db = require('../classes/DB')
-const DB = require('../classes/DB')
-const Token = require('../classes/Token')
-const { setSuccess, setWarning, setCustom, setError } = require('../functions/setReply')
-router = express.Router()
-module.exports = router
+import express from 'express'
+import cors from 'cors'
+import { headers } from '../options/corsOptions'
+import { setWarning, setSuccess, setError } from '../functions/setReply'
+
+const router = express.Router()
 
 router.get('/', function(req, res) {
   res.send('home')
@@ -69,3 +65,4 @@ router.post('/verifytoken', cors(), headers, function(req, res) {
   }
 })
 
+export default router

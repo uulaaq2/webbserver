@@ -66,7 +66,7 @@ const setError = (error) => {
     return reply
 }
 
-module.exports = {
+export {
     setSuccess,
     setWarning,
     setCustom,
